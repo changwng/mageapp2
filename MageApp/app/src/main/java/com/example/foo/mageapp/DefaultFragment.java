@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,7 @@ import com.example.foo.mageapp.xmlconnect.CartConnect;
  */
 public class DefaultFragment extends Fragment {
 
+    protected static final String TAG = DefaultFragment.class.getSimpleName();
     protected CartInfo mCartInfo;
     protected TextView mTvCartBadge;
 
@@ -96,18 +98,4 @@ public class DefaultFragment extends Fragment {
             mTvCartBadge.setVisibility(View.GONE);
         }
     }
-
-    /*private class CartInfoTask extends AsyncTask<Void, Void, CartInfo> {
-        @Override
-        protected CartInfo doInBackground(Void... params) {
-            CartInfo info = new CartConnect(getContext()).fetchCartInfo();
-            return info;
-        }
-
-        @Override
-        protected void onPostExecute(CartInfo result) {
-            mCartInfo = result;
-            updateMenu();
-        }
-    }*/
 }

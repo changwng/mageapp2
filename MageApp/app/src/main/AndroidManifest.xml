@@ -55,6 +55,9 @@
         </receiver>
         -->
 
+        <service
+            android:name=".InitService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
