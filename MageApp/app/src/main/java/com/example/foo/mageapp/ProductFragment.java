@@ -69,6 +69,7 @@ public class ProductFragment extends DefaultFragment implements AdapterView.OnIt
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRetainInstance(true);
         Handler mainHandler = new Handler();
         mImgDownloader = new ImgDownloader<>(getContext(), mainHandler);
         mImgDownloader.setOnDownloadListener(new ImgDownloader.OnDownloadListener<ImageView>() {

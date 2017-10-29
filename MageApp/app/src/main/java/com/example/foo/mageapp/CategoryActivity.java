@@ -40,7 +40,7 @@ public class CategoryActivity extends DefaultActivity {
     protected ListAdapter mDrawerListAdapter;
     protected String mCategoryId;
     protected Category mCategory;
-    protected List<DrawerItem> mDrawerItems = new ArrayList<>();
+    protected List<DrawerItem> mDrawerItems;
     protected CharSequence mTitle;
     protected CharSequence mDrawertitle;
 
@@ -52,7 +52,7 @@ public class CategoryActivity extends DefaultActivity {
             mCategory = savedInstanceState.getParcelable(SAVED_CATEGORY);
             List<Parcelable> drawerItems =
                     savedInstanceState.getParcelableArrayList(SAVED_DRAWER_ITEMS);
-//            mDrawerItems = new ArrayList<>();
+            mDrawerItems = new ArrayList<>();
             for (Parcelable item : drawerItems) {
                 mDrawerItems.add((DrawerItem) item);
             }
@@ -165,7 +165,7 @@ public class CategoryActivity extends DefaultActivity {
         DrawerItem item = new DrawerItem();
         String lblHome = getResources().getString(R.string.home);
         item.setLabel(lblHome);
-//        mDrawerItems = new ArrayList<>();
+        mDrawerItems = new ArrayList<>();
         mDrawerItems.add(item);
         for (Category cat : items) {
             item = new DrawerItem();
