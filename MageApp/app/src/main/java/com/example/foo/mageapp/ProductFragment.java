@@ -47,6 +47,7 @@ public class ProductFragment extends DefaultFragment implements AdapterView.OnIt
 
     protected static final String TAG = "ProductFragment";
     protected static final String ARG_PRODUCT_ID = "ARG_PRODUCT_ID";
+    protected static final String STATE_PRODUCT = "stateProduct";
 
     protected TextView mTvProductName;
     protected ImageView mIvProductIcon;
@@ -70,6 +71,7 @@ public class ProductFragment extends DefaultFragment implements AdapterView.OnIt
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setRetainInstance(true);
+
         Handler mainHandler = new Handler();
         mImgDownloader = new ImgDownloader<>(getContext(), mainHandler);
         mImgDownloader.setOnDownloadListener(new ImgDownloader.OnDownloadListener<ImageView>() {
@@ -82,15 +84,13 @@ public class ProductFragment extends DefaultFragment implements AdapterView.OnIt
         mImgDownloader.start();
         mImgDownloader.getLooper();
 
-        Bundle args = getArguments();
-        mProductId = args.getString(ARG_PRODUCT_ID);
-        String[] params = {mProductId};
-        new ProductTask().execute(params);
-
+        if (savedInstanceState == null) {
+            Bundle args = getArguments();
+            mProductId = args.getString(ARG_PRODUCT_ID);
+            String[] params = {mProductId};
+            new ProductTask().execute(params);
+        }
         // up button
-
-
-        int i = 0;
     }
 
     @Override
@@ -122,6 +122,21 @@ public class ProductFragment extends DefaultFragment implements AdapterView.OnIt
             }
         });
         return v;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(STATE_PRODUCT, mProduct);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            mProduct = savedInstanceState.getParcelable(STATE_PRODUCT);
+            updateUI();
+        }
     }
 
     protected int getNumSelectedFields() {
