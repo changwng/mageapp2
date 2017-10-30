@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,7 @@ import com.example.foo.mageapp.xmlconnect.CartConnect;
 public class MainActivity extends AppCompatActivity {
 
     protected static final String TAG = "MainActivity";
-    protected static int sVisited;
+    protected static boolean sStarted;
     protected CartInfo mCartInfo;
 
     @Override
@@ -40,12 +41,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         Log.d(TAG, "Starting the app..");
-        Log.d(TAG, "Visited: " + sVisited);
-        if (sVisited < 1) {
-            this.onAppStart();
-        }
-        sVisited++;
+        Log.d(TAG, "Started: " + sStarted);
+
+        if (sStarted) return;
+        this.onAppStart();
+        sStarted = true;
     }
 
     @Override

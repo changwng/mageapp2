@@ -1,5 +1,7 @@
 package com.example.foo.mageapp.catalog.product;
 
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,7 @@ import java.util.List;
  * Created by foo on 9/2/17.
  */
 
-public class Option {
+public class Option implements Parcelable {
     protected String mCode;
     protected String mType;
     protected String mLabel;
