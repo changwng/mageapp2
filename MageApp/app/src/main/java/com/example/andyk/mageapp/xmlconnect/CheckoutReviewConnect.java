@@ -270,10 +270,11 @@ public class CheckoutReviewConnect extends DefaultConnect {
         mPath = "xmlconnect/checkout/saveOrder";
         mPostData = data;
         String url = this.getRequestUrl();
-//        String resp = this.getContentByUrl(url);
-        String resp = this.getPlaceOrderResponse();
-        ResponseMessage respMsg = this.parseResponseMessage(resp);
-        return respMsg;
+        String resp = this.getContentByUrl(url);
+//        String resp = this.getPlaceOrderResponse();
+//        ResponseMessage respMsg = this.parseResponseMessage(resp);
+//        return respMsg;
+        return mRespMsg;
     }
 
     protected String getPlaceOrderResponse() {

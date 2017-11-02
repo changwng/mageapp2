@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.example.andyk.mageapp.cart.CartTotal;
 import com.example.andyk.mageapp.checkout.OrderReview;
 import com.example.andyk.mageapp.helper.ImgDownloader;
+import com.example.andyk.mageapp.helper.SharedPref;
 import com.example.andyk.mageapp.sales.QuoteItem;
 import com.example.andyk.mageapp.sales.QuoteItemOption;
 import com.example.andyk.mageapp.xmlconnect.CheckoutReviewConnect;
@@ -162,6 +163,7 @@ public class CheckoutReviewFragment extends Fragment {
         String title = res.getString(R.string.alert);
 
         if (mRespMsg.isSuccess()) {
+            SharedPref.putCartitesmQty(mContext, "0"); // update / clear saved cart items qty
             Intent activity = new CheckoutOrderSuccessActivity().newIntent(mContext);
             activity.putExtra(CheckoutOrderSuccessActivity.EXTRA_MESSAGE_TEXT,
                     mRespMsg.getText());

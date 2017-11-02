@@ -82,6 +82,7 @@ public class CheckoutShippingMethodFragment extends Fragment {
         if (savedInstanceState != null) {
             mShippingMethods = savedInstanceState.getParcelableArrayList(STATE_SHIPPING_METHODS);
             this.updateUI();
+            this.updateNextButton();
         }
     }
 
@@ -105,13 +106,13 @@ public class CheckoutShippingMethodFragment extends Fragment {
                             public void onClick(View v) {
                                 String rateCode = ((ShippingMethodRate) v.getTag()).getCode();
                                 mPostData.put("shipping_method", rateCode);
+                                updateNextButton();
                             }
                         });
                         mRadioGroup.addView(btn);
                     }
                 }
             }
-            this.updateNextButton();
         }
     }
 
