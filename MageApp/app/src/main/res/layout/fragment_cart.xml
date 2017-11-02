@@ -5,7 +5,7 @@
                                              android:layout_height="match_parent"
                                              android:layout_alignParentBottom="true"
                                              android:layout_alignParentRight="true"
-                                             tools:context="com.example.foo.mageapp.CartFragment">
+                                             tools:context="com.example.andyk.mageapp.CartFragment">
 
     <!-- TODO: Upda77te blank fragment layout -->
 

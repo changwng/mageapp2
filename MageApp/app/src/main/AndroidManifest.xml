@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.foo.mageapp">
+    package="com.example.andyk.mageapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -28,7 +28,7 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.foo.mageapp.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity android:name=".DefaultActivity" />
         <activity android:name=".ProductActivity" />
