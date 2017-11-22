@@ -1,13 +1,18 @@
 package com.example.andyk.mageapp;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +32,8 @@ import com.example.andyk.mageapp.form.FormFieldValue;
 import com.example.andyk.mageapp.helper.Helper;
 import com.example.andyk.mageapp.xmlconnect.ResponseMessage;
 
+import java.security.Permission;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +46,8 @@ public class CheckoutAddressFragment extends Fragment {
 
     protected static final String TAG = "CheckoutAddressFragment";
     protected static final String STATE_FORM = "addressForm";
+    protected static final int REQUEST_READ_CONTACTS = 0;
+
     protected Form mForm;
     protected LinearLayout mAddressForm;
     protected Button mBtSave;
@@ -46,6 +55,7 @@ public class CheckoutAddressFragment extends Fragment {
     protected Map<String, String> mPostData;
     protected ResponseMessage mFormSaveRespMsg;
     protected boolean mIsFormValid;
+    protected Map<String, String> mAddrData = new HashMap<>();
 
     public CheckoutAddressFragment() {
         // Required empty public constructor
@@ -105,7 +115,11 @@ public class CheckoutAddressFragment extends Fragment {
 
     protected void renderEditText(FormField field) {
         EditText view = new EditText(getContext());
-        view.setHint(field.getLabel());
+        if (mAddrData.get(field.getId()) != null) {
+            view.setText(mAddrData.get(field.getId()));
+        } else {
+            view.setHint(field.getLabel());
+        }
         view.setTag(field);
         int viewId = this.getViewIdByField(field);
         view.setId(viewId);
@@ -222,6 +236,65 @@ public class CheckoutAddressFragment extends Fragment {
                 .show();
     }
 
+    protected int getViewIdByField(FormField field) {
+        switch (field.getId()) {
+            case "firstname":
+                return R.id.firstname;
+            case "lastname":
+                return R.id.lastname;
+            case "company":
+                return R.id.company;
+            case "email":
+                return R.id.email;
+            case "street":
+                return R.id.street;
+            case "street_2":
+                return R.id.street_2;
+            case "city":
+                return R.id.city;
+            case "country_id":
+                return R.id.country_id;
+            case "region":
+                return R.id.region;
+            case "region_id":
+                return R.id.region_id;
+            case "postcode":
+                return R.id.postcode;
+            case "telephone":
+                return R.id.telephone;
+            case "fax":
+                return R.id.fax;
+            case "save_in_address_book":
+                return R.id.save_in_address_book;
+            default:
+                return Helper.generateViewId();
+        }
+    }
+
+    protected void checkPermission() {
+        int permission = ContextCompat.checkSelfPermission(this.getActivity(),
+                Manifest.permission.READ_CONTACTS);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this.getActivity(),
+                    new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_READ_CONTACTS);
+        } else {
+            this.fetchAddress();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode != REQUEST_READ_CONTACTS) return;
+        if ( (grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED) ) {
+            this.fetchAddress();
+        }
+    }
+
+    protected void fetchAddress() {
+
+    }
+
     private class DropDownAdapter extends ArrayAdapter<FormFieldValue> {
         protected List<FormFieldValue> mItems;
 
@@ -259,41 +332,6 @@ public class CheckoutAddressFragment extends Fragment {
             String label = mItems.get(position).getLabel();
             tvLabel.setText(label);
             return convertView;
-        }
-    }
-
-    protected int getViewIdByField(FormField field) {
-        switch (field.getId()) {
-            case "firstname":
-                return R.id.firstname;
-            case "lastname":
-                return R.id.lastname;
-            case "company":
-                return R.id.company;
-            case "email":
-                return R.id.email;
-            case "street":
-                return R.id.street;
-            case "street_2":
-                return R.id.street_2;
-            case "city":
-                return R.id.city;
-            case "country_id":
-                return R.id.country_id;
-            case "region":
-                return R.id.region;
-            case "region_id":
-                return R.id.region_id;
-            case "postcode":
-                return R.id.postcode;
-            case "telephone":
-                return R.id.telephone;
-            case "fax":
-                return R.id.fax;
-            case "save_in_address_book":
-                return R.id.save_in_address_book;
-            default:
-                return Helper.generateViewId();
         }
     }
 }
