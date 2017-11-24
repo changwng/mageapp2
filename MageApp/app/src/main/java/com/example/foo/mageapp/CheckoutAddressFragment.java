@@ -88,6 +88,11 @@ public class CheckoutAddressFragment extends Fragment {
                     break;
             }
         }
+        this.updateUIAfter();
+    }
+
+    protected void updateUIAfter() {
+
     }
 
     protected void renderCheckbox(FormField field) {

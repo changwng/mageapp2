@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -237,8 +238,11 @@ public class Contact {
                                     mData.put("street_2", longName);
                                     break;
                                 case "administrative_area_level_1":
-                                    mData.put("regionCode", shortName);
-                                    mData.put("region", longName);
+                                    // we don't need region if region_code is set
+                                    if (TextUtils.isEmpty(shortName)) {
+                                        mData.put("region", longName);
+                                    }
+                                    mData.put("region_code", shortName);
                                     break;
                             }
                         }
@@ -264,15 +268,28 @@ public class Contact {
         for (Address addr : addrs) {
             String street = addr.getAddressLine(0);
             String countryCode = addr.getCountryCode();
-            String coutnryName = addr.getCountryName();
+            String countryName = addr.getCountryName();
             String city = (addr.getLocality() != null) ? addr.getLocality() : addr.getSubLocality();
             String postcode = addr.getPostalCode();
             mData.put("street", street);
-            mData.put("countryCode", countryCode);
-            mData.put("country", coutnryName);
+            mData.put("country_code", countryCode);
+            mData.put("country", countryName);
             mData.put("country_id", countryCode);
             mData.put("city", city);
             mData.put("postcode", postcode);
+
+            // get street_2 from formatted_address field
+            String formattedAddr = mData.get("formatted_address");
+            // use REGEX to remove anything but alphanumeric
+            String street2 = formattedAddr.replaceAll("[^a-zA-Z0-9#\\s]", "");
+            String[] patterns = new String[]{
+                    city, countryCode, countryName, postcode, mData.get("region"),
+                    mData.get("region_code"), street
+            };
+            String pattern = TextUtils.join("|", patterns);
+            street2 = street2.replaceAll(pattern, "");
+            street2 = street2.trim();
+            mData.put("street_2", street2);
         }
     }
 

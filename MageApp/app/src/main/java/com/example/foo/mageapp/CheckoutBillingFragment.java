@@ -48,7 +48,6 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
         super.onCreate(savedInstanceState);
         this.setRetainInstance(true);
         new BillingTask().execute();
-        this.getPrimaryContact();
     }
 
     @Override
@@ -95,6 +94,11 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
         } else {
             Toast.makeText(getContext(), mFormSaveRespMsg.getText(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    protected void updateUIAfter() {
+        this.getPrimaryContact();
     }
 
     protected void handlePermission() {
