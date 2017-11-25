@@ -10,20 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.example.foo.mageapp.form.Form;
-import com.example.foo.mageapp.form.FormField;
-import com.example.foo.mageapp.form.FormFieldValue;
 import com.example.foo.mageapp.helper.Contact;
 import com.example.foo.mageapp.xmlconnect.CheckoutBillingConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
@@ -84,7 +76,12 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
     }
 
     @Override
-    protected void updateUIAfter() {
+    protected void updateUI() {
+        super.updateUI();
+        this.onPostUiUpdate();
+    }
+
+    protected void onPostUiUpdate() {
         this.getPrimaryContact();
     }
 

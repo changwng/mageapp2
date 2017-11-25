@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -59,7 +57,7 @@ public class CheckoutShippingFragment extends CheckoutAddressFragment {
         return new CheckoutShippingFragment();
     }
 
-    protected void saveFormAfter() {
+    protected void onPostFormSave() {
         if (mFormSaveRespMsg.isSuccess()) {
             Intent activity = new Intent(getContext(), CheckoutShippingMethodActivity.class);
             startActivity(activity);
@@ -92,7 +90,7 @@ public class CheckoutShippingFragment extends CheckoutAddressFragment {
         @Override
         protected void onPostExecute(ResponseMessage result) {
             mFormSaveRespMsg = result;
-            saveFormAfter();
+            onPostFormSave();
         }
     }
 }

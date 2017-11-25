@@ -52,7 +52,8 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/card_type"/>
+            android:id="@+id/card_type"
+            style="?android:attr/spinnerDropDownItemStyle"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -80,8 +81,8 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/card_exp_month"/>
-
+                    android:id="@+id/card_exp_month"
+                    style="?android:attr/spinnerDropDownItemStyle"/>
             </LinearLayout>
 
             <LinearLayout
@@ -97,7 +98,8 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/card_exp_year"/>
+                    android:id="@+id/card_exp_year"
+                    style="?android:attr/spinnerDropDownItemStyle"/>
 
             </LinearLayout>
 

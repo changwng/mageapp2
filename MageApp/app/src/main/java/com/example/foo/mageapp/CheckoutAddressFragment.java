@@ -13,7 +13,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,7 +58,7 @@ public class CheckoutAddressFragment extends Fragment {
     protected Map<String, String> mPostData;
     protected ResponseMessage mFormSaveRespMsg;
     protected boolean mIsFormValid;
-    protected Map<String, String> mContactData = new HashMap<>();
+    protected Map<String, String> mContactData;
 
     public CheckoutAddressFragment() {
         // Required empty public constructor
@@ -141,11 +140,6 @@ public class CheckoutAddressFragment extends Fragment {
                     break;
             }
         }
-        this.updateUIAfter();
-    }
-
-    protected void updateUIAfter() {
-
     }
 
     protected void renderCheckbox(FormField field) {
