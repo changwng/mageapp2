@@ -123,7 +123,8 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
         contact.setOnAddressUpdateListener(new Contact.OnAddressUpdateListener() {
             @Override
             public void onAddressUpdated(Map<String, String> data) {
-                populateForm(data);
+                mContactData = data;
+                populateForm();
             }
         });
     }

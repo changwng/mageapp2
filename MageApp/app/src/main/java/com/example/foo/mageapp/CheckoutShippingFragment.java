@@ -1,35 +1,27 @@
 package com.example.foo.mageapp;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.foo.mageapp.form.Form;
-import com.example.foo.mageapp.helper.Contact;
 import com.example.foo.mageapp.xmlconnect.CheckoutShippingConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class CheckoutShippingFragment extends CheckoutAddressFragment {
-
-    protected static final int PICK_CONTACT_REQUEST_CODE = 0;
 
     public CheckoutShippingFragment() {
         // Required empty public constructor
@@ -41,7 +33,6 @@ public class CheckoutShippingFragment extends CheckoutAddressFragment {
         super.onCreate(savedInstanceState);
         this.setRetainInstance(true);
         new ShippingTask().execute();
-        this.setHasOptionsMenu(true);
     }
 
     @Override
@@ -62,38 +53,6 @@ public class CheckoutShippingFragment extends CheckoutAddressFragment {
             }
         });
         return v;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.checkout_shipping, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.contact_sync:
-                Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                this.startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST_CODE);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode != PICK_CONTACT_REQUEST_CODE) return;
-        if (resultCode != Activity.RESULT_OK) return;
-        Uri uri = intent.getData();
-        Contact contact = Contact.getInstance(this.getContext());
-        contact.requestDataByContactUri(uri);
-        contact.setOnAddressUpdateListener(new Contact.OnAddressUpdateListener() {
-            @Override
-            public void onAddressUpdated(Map<String, String> data) {
-                populateForm(data);
-            }
-        });
     }
 
     public static Fragment newInstance() {

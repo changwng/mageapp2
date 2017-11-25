@@ -1,16 +1,23 @@
 package com.example.foo.mageapp;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,9 +33,11 @@ import android.widget.TextView;
 import com.example.foo.mageapp.form.Form;
 import com.example.foo.mageapp.form.FormField;
 import com.example.foo.mageapp.form.FormFieldValue;
+import com.example.foo.mageapp.helper.Contact;
 import com.example.foo.mageapp.helper.Helper;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +50,8 @@ public class CheckoutAddressFragment extends Fragment {
 
     protected static final String TAG = "CheckoutAddressFragment";
     protected static final String STATE_FORM = "addressForm";
+    protected static final int PICK_CONTACT_REQUEST_CODE = 0;
+
     protected Form mForm;
     protected LinearLayout mAddressForm;
     protected Button mBtSave;
@@ -48,9 +59,16 @@ public class CheckoutAddressFragment extends Fragment {
     protected Map<String, String> mPostData;
     protected ResponseMessage mFormSaveRespMsg;
     protected boolean mIsFormValid;
+    protected Map<String, String> mContactData = new HashMap<>();
 
     public CheckoutAddressFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setHasOptionsMenu(true);
     }
 
     /**
@@ -71,6 +89,39 @@ public class CheckoutAddressFragment extends Fragment {
             mForm = savedInstanceState.getParcelable(STATE_FORM);
             updateUI();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.checkout_address, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.contact_sync:
+                Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                this.startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST_CODE);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode != PICK_CONTACT_REQUEST_CODE) return;
+        if (resultCode != Activity.RESULT_OK) return;
+        Uri uri = intent.getData();
+        Contact contact = Contact.getInstance(this.getContext());
+        contact.requestDataByContactUri(uri);
+        contact.setOnAddressUpdateListener(new Contact.OnAddressUpdateListener() {
+            @Override
+            public void onAddressUpdated(Map<String, String> data) {
+                mContactData = data;
+                populateForm();
+            }
+        });
     }
 
     protected void updateUI() {
@@ -149,6 +200,22 @@ public class CheckoutAddressFragment extends Fragment {
                                 DropDownAdapter adapter =
                                         new DropDownAdapter(getContext(), item.getItems());
                                 ((Spinner) elem).setAdapter(adapter);
+
+                                // populate dynamic drop down
+                                if (mContactData.containsKey(fieldId) &&
+                                        (mContactData.get(fieldId) != null)) {
+                                    String val = mContactData.get(fieldId);
+                                    int numItems = item.getItems().size();
+                                    boolean found = false;
+                                    int j = 0;
+                                    do {
+                                        if (item.getItems().get(j).getLabel().equals(val)) {
+                                            ((Spinner) elem).setSelection(j);
+                                            found = true;
+                                        }
+                                        j++;
+                                    } while (!found && (j < numItems));
+                                }
                             }
                         }
                     }
@@ -266,11 +333,9 @@ public class CheckoutAddressFragment extends Fragment {
 
     /**
      * populates form field values
-     *
-     * @param data
      */
-    protected void populateForm(Map<String, String> data) {
-        if (data == null) return;
+    protected void populateForm() {
+        if (mContactData == null) return;
         if (mAddressForm == null) return;
         int childCnt = mAddressForm.getChildCount();
         for (int i = 0; i < childCnt; i++) {
@@ -278,9 +343,8 @@ public class CheckoutAddressFragment extends Fragment {
             FormField field = (FormField) child.getTag();
             if (field != null) {
                 String key = field.getId();
-                Log.d(TAG, "key: " + key);
-                if (data.containsKey(key) && !TextUtils.isEmpty(data.get(key))) {
-                    String val = data.get(key);
+                if (mContactData.containsKey(key) && !TextUtils.isEmpty(mContactData.get(key))) {
+                    String val = mContactData.get(key);
                     if (child instanceof EditText) {
                         ((EditText) child).setText(val);
                     } else if (child instanceof Spinner) {
@@ -308,9 +372,7 @@ public class CheckoutAddressFragment extends Fragment {
         }
 
         @Override
-        public
-        @NonNull
-        View getView(int position, @Nullable View convertView,
+        public @NonNull View getView(int position, @Nullable View convertView,
                      @NonNull ViewGroup parent) {
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(getContext());

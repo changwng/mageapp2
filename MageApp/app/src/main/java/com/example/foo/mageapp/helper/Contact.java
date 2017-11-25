@@ -285,6 +285,8 @@ public class Contact {
                                 case "administrative_area_level_1":
                                     mData.put("region", longName);
                                     mData.put("region_code", shortName);
+                                    // hacky way to set since the server returns number id we want to compare agains the label
+                                    mData.put("region_id", longName);
                                     break;
                             }
                         }
