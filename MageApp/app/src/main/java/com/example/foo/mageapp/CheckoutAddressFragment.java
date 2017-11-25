@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.example.foo.mageapp.form.Form;
@@ -227,6 +229,76 @@ public class CheckoutAddressFragment extends Fragment {
                 .show();
     }
 
+    protected int getViewIdByField(FormField field) {
+        switch (field.getId()) {
+            case "firstname":
+                return R.id.firstname;
+            case "lastname":
+                return R.id.lastname;
+            case "company":
+                return R.id.company;
+            case "email":
+                return R.id.email;
+            case "street":
+                return R.id.street;
+            case "street_2":
+                return R.id.street_2;
+            case "city":
+                return R.id.city;
+            case "country_id":
+                return R.id.country_id;
+            case "region":
+                return R.id.region;
+            case "region_id":
+                return R.id.region_id;
+            case "postcode":
+                return R.id.postcode;
+            case "telephone":
+                return R.id.telephone;
+            case "fax":
+                return R.id.fax;
+            case "save_in_address_book":
+                return R.id.save_in_address_book;
+            default:
+                return Helper.generateViewId();
+        }
+    }
+
+    /**
+     * populates form field values
+     *
+     * @param data
+     */
+    protected void populateForm(Map<String, String> data) {
+        if (data == null) return;
+        if (mAddressForm == null) return;
+        int childCnt = mAddressForm.getChildCount();
+        for (int i = 0; i < childCnt; i++) {
+            View child = mAddressForm.getChildAt(i);
+            FormField field = (FormField) child.getTag();
+            if (field != null) {
+                String key = field.getId();
+                Log.d(TAG, "key: " + key);
+                if (data.containsKey(key) && !TextUtils.isEmpty(data.get(key))) {
+                    String val = data.get(key);
+                    if (child instanceof EditText) {
+                        ((EditText) child).setText(val);
+                    } else if (child instanceof Spinner) {
+                        Spinner view = ((Spinner) child);
+                        SpinnerAdapter adapter = view.getAdapter();
+                        int cnt = adapter.getCount();
+                        for (int j = 0; j < cnt; j++) {
+                            FormFieldValue item = (FormFieldValue) adapter.getItem(j);
+                            if (item.getValue().equals(val)) {
+                                view.setSelection(j);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private class DropDownAdapter extends ArrayAdapter<FormFieldValue> {
         protected List<FormFieldValue> mItems;
 
@@ -264,41 +336,6 @@ public class CheckoutAddressFragment extends Fragment {
             String label = mItems.get(position).getLabel();
             tvLabel.setText(label);
             return convertView;
-        }
-    }
-
-    protected int getViewIdByField(FormField field) {
-        switch (field.getId()) {
-            case "firstname":
-                return R.id.firstname;
-            case "lastname":
-                return R.id.lastname;
-            case "company":
-                return R.id.company;
-            case "email":
-                return R.id.email;
-            case "street":
-                return R.id.street;
-            case "street_2":
-                return R.id.street_2;
-            case "city":
-                return R.id.city;
-            case "country_id":
-                return R.id.country_id;
-            case "region":
-                return R.id.region;
-            case "region_id":
-                return R.id.region_id;
-            case "postcode":
-                return R.id.postcode;
-            case "telephone":
-                return R.id.telephone;
-            case "fax":
-                return R.id.fax;
-            case "save_in_address_book":
-                return R.id.save_in_address_book;
-            default:
-                return Helper.generateViewId();
         }
     }
 }

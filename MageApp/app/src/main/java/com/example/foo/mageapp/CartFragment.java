@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CartFragment extends DefaultFragment {
+public class CartFragment extends Fragment {
 
     protected static final String TAG = "CartFragment";
     protected static final String STATE_CART = "cart";
@@ -172,7 +172,7 @@ public class CartFragment extends DefaultFragment {
         // show cart total information
         SharedPref.putCartitesmQty(getContext(), mCartInfo.getSummaryQty());
         this.updateCartTotal();
-        updateMenu();
+//        updateMenu();
     }
 
     protected void updateCartTotal() {
@@ -208,7 +208,7 @@ public class CartFragment extends DefaultFragment {
                             if (mCartInfo != null) {
                                 String qty = mCartInfo.getSummaryQty();
                                 SharedPref.putCartitesmQty(getContext(), qty);
-                                updateMenu();
+//                                updateMenu();
                             }
 //                            Intent activty = MainActivity.newIntent(getContext());
 //                            startActivity(activty);

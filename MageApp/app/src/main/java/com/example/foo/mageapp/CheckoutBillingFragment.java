@@ -83,6 +83,11 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
         }
     }
 
+    @Override
+    protected void updateUIAfter() {
+        this.getPrimaryContact();
+    }
+
     public static Fragment newInstance() {
         return new CheckoutBillingFragment();
     }
@@ -94,11 +99,6 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
         } else {
             Toast.makeText(getContext(), mFormSaveRespMsg.getText(), Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    protected void updateUIAfter() {
-        this.getPrimaryContact();
     }
 
     protected void handlePermission() {
@@ -119,46 +119,13 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
 
     protected void fetchPrimaryContact() {
         Contact contact = Contact.getInstance(getContext());
-        Map<String, String> info = contact.getOwnerAddressInfo();
-        if (info != null) {
-            updateForm(info);
-        }
+        contact.requestOwnerData();
         contact.setOnAddressUpdateListener(new Contact.OnAddressUpdateListener() {
             @Override
             public void onAddressUpdated(Map<String, String> data) {
-                updateForm(data);
+                populateForm(data);
             }
         });
-    }
-
-    protected void updateForm(Map<String, String> data) {
-        if (data == null) return;
-        if (mAddressForm == null) return;
-        int childCnt = mAddressForm.getChildCount();
-        for (int i = 0; i < childCnt; i++) {
-            View child = mAddressForm.getChildAt(i);
-            FormField field = (FormField) child.getTag();
-            if (field != null) {
-                String key = field.getId();
-                Log.d(TAG, "key: " + key);
-                if (data.containsKey(key) && !TextUtils.isEmpty(data.get(key))) {
-                    String val = data.get(key);
-                    if (child instanceof EditText) {
-                        ((EditText) child).setText(val);
-                    } else if (child instanceof Spinner) {
-                        Spinner view = ((Spinner) child);
-                        SpinnerAdapter adapter = view.getAdapter();
-                        int cnt = adapter.getCount();
-                        for (int j = 0; j < cnt; j++) {
-                            FormFieldValue item = (FormFieldValue) adapter.getItem(j);
-                            if (item.getValue().equals(val)) {
-                               view.setSelection(j);
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private class BillingTask extends AsyncTask<Void, Void, Form> {

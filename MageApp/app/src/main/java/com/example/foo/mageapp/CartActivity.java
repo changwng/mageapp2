@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 
-public class CartActivity extends DefaultActivity {
+public class CartActivity extends AppCompatActivity {
 
     protected static final String TAG = "CartActivity";
 //    protected static final String INTENT_EXTRA_CART_DATA = "intent.extra.CART_DATA";

@@ -6,7 +6,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
@@ -88,119 +90,161 @@ public class Contact {
         return data;
     }
 
-    public String getOwnerEmail() {
+    public void requestOwnerData() {
+        this.populateOwnerIdAndEmail();
+        this.populateBasicInfo();
+        this.populateAddress();
+    }
+
+    public void requestDataByContactUri(Uri contactUri) {
+        this.populateIdAndEmailByContactUri(contactUri);
+        this.populateBasicInfo();
+        this.populateAddress();
+    }
+
+    public Map<String, String> getData() {
+        return mData;
+    }
+
+    protected String getContactId() {
+        String key = "contact_id";
+        if (mData.containsKey(key) && !TextUtils.isEmpty(mData.get(key))) {
+            return mData.get(key);
+        }
+        return null;
+    }
+
+    protected Account getPrimaryAccount() {
         AccountManager am = (AccountManager) mContext.getSystemService(Context.ACCOUNT_SERVICE);
         Account[] accts = am.getAccountsByType(OWNER_ACCOUNT_TYPE);
         if (accts.length == 0) return null;
         Account acct = accts[0];
-        String email = acct.name;
-        return email;
+        return acct;
     }
 
-    public Map<String, String> getOwnerContactInfo() {
+    protected void populateOwnerIdAndEmail() {
         if (mData.isEmpty()) {
-            String email = this.getOwnerEmail();
+            Account acct = this.getPrimaryAccount();
+            String email = acct.name;
             if (email != null) {
-                String contactId = null;
                 Cursor c = mContext.getContentResolver().query(Email.CONTENT_URI,
                         null, Email.ADDRESS + " = ?", new String[]{email},
                         null);
                 if ((c != null) && (c.getCount() > 0)) {
                     c.moveToFirst();
-                    contactId = c.getString(c.getColumnIndex(Email.CONTACT_ID));
+                    String contactId = c.getString(c.getColumnIndex(Email.CONTACT_ID));
                     mData.put("contact_id", contactId);
                     mData.put("email", c.getString(c.getColumnIndex(Email.ADDRESS)));
                     c.close();
                 }
-                c = mContext.getContentResolver().query(Phone.CONTENT_URI,
-                        null,
-                        Phone.CONTACT_ID + " = ?",
-                        new String[]{contactId},
-                        null);
-                if ((c != null) && (c.getCount() > 0)) {
+            }
+        }
+    }
+
+    protected void populateIdAndEmailByContactUri(Uri contactUri) {
+        if (!mData.isEmpty()) {
+            mData.clear();
+        }
+        Cursor c = mContext.getContentResolver().query(contactUri, null, null,
+                null, null);
+        if ((c != null) && (c.getCount() > 0)) {
+            c.moveToFirst();
+            String contactId = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+            mData.put("contact_id", contactId);
+            c.close();
+        }
+        if (mData.containsKey("contact_id") && !TextUtils.isEmpty(mData.get("contact_id"))) {
+            c = mContext.getContentResolver().query(Email.CONTENT_URI, new String[]{Email.ADDRESS},
+                    Email.CONTACT_ID + " = ?", new String[]{mData.get("contact_id")}, null);
+            c.moveToFirst();
+            String email = c.getString(c.getColumnIndex(Email.ADDRESS));
+            mData.put("email", email);
+            c.close();
+        }
+    }
+
+    protected void populateBasicInfo() {
+        String contactId = this.getContactId();
+        if (contactId != null) {
+            Cursor c = mContext.getContentResolver().query(Phone.CONTENT_URI,
+                    null,
+                    Phone.CONTACT_ID + " = ?",
+                    new String[]{contactId},
+                    null);
+            if ((c != null) && (c.getCount() > 0)) {
+                c.moveToFirst();
+                String phone = c.getString(c.getColumnIndex(Phone.NUMBER));
+                mData.put("telephone", phone);
+                c.close();
+            }
+            c = mContext.getContentResolver().query(Data.CONTENT_URI,
+                    null,
+                    Data.MIMETYPE + " = ? AND " + StructuredName.CONTACT_ID + " = ?",
+                    new String[]{StructuredName.CONTENT_ITEM_TYPE, contactId},
+                    null);
+            if ((c != null) && (c.getCount() > 0)) {
+                c.moveToFirst();
+                String fname = c.getString(c.getColumnIndex(StructuredName.GIVEN_NAME));
+                String lname = c.getString(c.getColumnIndex(StructuredName.FAMILY_NAME));
+                mData.put("firstname", fname);
+                mData.put("lastname", lname);
+                c.close();
+            }
+        }
+    }
+
+    protected void populateAddress() {
+        String contactId = this.getContactId();
+        if (contactId != null) {
+            Cursor c = mContext.getContentResolver().query(
+                    StructuredPostal.CONTENT_URI,
+                    new String[]{
+                            StructuredPostal.CITY,
+                            StructuredPostal.COUNTRY,
+                            StructuredPostal.FORMATTED_ADDRESS,
+                            StructuredPostal.POSTCODE,
+                            StructuredPostal.REGION,
+                            StructuredPostal.STREET
+                    },
+                    StructuredPostal.CONTACT_ID + " = ?",
+                    new String[]{contactId}, null);
+            if (c != null) {
+                int cnt = c.getCount();
+                if (cnt > 0) {
                     c.moveToFirst();
-                    String phone = c.getString(c.getColumnIndex(Phone.NUMBER));
-                    mData.put("telephone", phone);
-                    c.close();
+                    String city = c.getString(c.getColumnIndex(StructuredPostal.CITY));
+                    String country = c.getString(c.getColumnIndex(StructuredPostal.COUNTRY));
+                    String formattedAddr = c.getString(c.getColumnIndex(StructuredPostal.
+                            FORMATTED_ADDRESS));
+                    String postcode = c.getString(c.getColumnIndex(StructuredPostal.POSTCODE));
+                    String region = c.getString(c.getColumnIndex(StructuredPostal.REGION));
+                    String street = c.getString(c.getColumnIndex(StructuredPostal.STREET));
+                    mData.put("city", city);
+                    mData.put("country", country);
+                    mData.put("formatted_address", formattedAddr);
+                    mData.put("postcode", postcode);
+                    mData.put("region", region);
+                    mData.put("street", street);
                 }
-                c = mContext.getContentResolver().query(Data.CONTENT_URI,
-                        null,
-                        Data.MIMETYPE + " = ? AND " + StructuredName.CONTACT_ID + " = ?",
-                        new String[]{StructuredName.CONTENT_ITEM_TYPE, contactId},
-                        null);
-                if ((c != null) && (c.getCount() > 0)) {
-                    c.moveToFirst();
-                    String fname = c.getString(c.getColumnIndex(StructuredName.GIVEN_NAME));
-                    String lname = c.getString(c.getColumnIndex(StructuredName.FAMILY_NAME));
-                    mData.put("firstname", fname);
-                    mData.put("lastname", lname);
-                    c.close();
+                c.close();
+            }
+            if ((mData.get("city") == null) && (mData.get("country") == null)
+                    && (mData.get("postcode") == null) && (mData.get("region") == null)) {
+                if (mData.get("formatted_address") != null) {
+                    this.getAddressesFromLocationName(mData.get("formatted_address"));
+                } else if (mData.get("street") != null) {
+                    this.getAddressesFromLocationName(mData.get("street"));
                 }
             }
         }
-        return mData;
-    }
-
-    public String getOwnerContactId() {
-        Map<String, String> info = this.getOwnerContactInfo();
-        if (info.isEmpty()) return null;
-        return info.get("contact_id");
-    }
-
-    public Map<String, String> getOwnerAddressInfo() {
-        if (mData.get("postcode") == null) {
-            String contactId = this.getOwnerContactId();
-            if (contactId != null) {
-                Cursor c = mContext.getContentResolver().query(
-                        StructuredPostal.CONTENT_URI,
-                        new String[]{
-                                StructuredPostal.CITY,
-                                StructuredPostal.COUNTRY,
-                                StructuredPostal.FORMATTED_ADDRESS,
-                                StructuredPostal.POSTCODE,
-                                StructuredPostal.REGION,
-                                StructuredPostal.STREET
-                        },
-                        StructuredPostal.CONTACT_ID + " = ?",
-                        new String[]{contactId}, null);
-                if (c != null) {
-                    int cnt = c.getCount();
-                    if (cnt > 0) {
-                        c.moveToFirst();
-                        String city = c.getString(c.getColumnIndex(StructuredPostal.CITY));
-                        String country = c.getString(c.getColumnIndex(StructuredPostal.COUNTRY));
-                        String formattedAddr = c.getString(c.getColumnIndex(StructuredPostal.FORMATTED_ADDRESS));
-                        String postcode = c.getString(c.getColumnIndex(StructuredPostal.POSTCODE));
-                        String region = c.getString(c.getColumnIndex(StructuredPostal.REGION));
-                        String street = c.getString(c.getColumnIndex(StructuredPostal.STREET));
-                        mData.put("city", city);
-                        mData.put("country", country);
-                        mData.put("formatted_address", formattedAddr);
-                        mData.put("postcode", postcode);
-                        mData.put("region", region);
-                        mData.put("street", street);
-                    }
-                    c.close();
-                }
-                if ((mData.get("city") == null) && (mData.get("country") == null)
-                        && (mData.get("postcode") == null) && (mData.get("region") == null)) {
-                    if (mData.get("formatted_address") != null) {
-                        this.getAddressesFromLocationName(mData.get("formatted_address"));
-                    } else if (mData.get("street") != null) {
-                        this.getAddressesFromLocationName(mData.get("street"));
-                    }
-                }
-            }
-        }
-        return mData;
     }
 
     protected List getAddressesFromLocationName(String addr) {
         List<Address> addrs = new ArrayList();
         Geocoder geo = new Geocoder(mContext, Locale.getDefault());
         if (geo.isPresent()) {
-            try {
-                addrs = geo.getFromLocationName(addr, 10);
+            /*try {
+                addrs = geo.getFromLocationName(addr, 1);
                 if (addrs.isEmpty()) {
                     new LocationTask().execute(addr);
                 } else {
@@ -208,7 +252,8 @@ public class Contact {
                 }
             } catch (IOException ioe) {
                 Log.e(TAG, ioe.getMessage(), ioe);
-            }
+            }*/
+            new LocationTask().execute(addr);
         }
         return addrs;
     }
@@ -238,10 +283,7 @@ public class Contact {
                                     mData.put("street_2", longName);
                                     break;
                                 case "administrative_area_level_1":
-                                    // we don't need region if region_code is set
-                                    if (TextUtils.isEmpty(shortName)) {
-                                        mData.put("region", longName);
-                                    }
+                                    mData.put("region", longName);
                                     mData.put("region_code", shortName);
                                     break;
                             }
@@ -266,7 +308,8 @@ public class Contact {
 
     protected void parseAddressList(List<Address> addrs) {
         for (Address addr : addrs) {
-            String street = addr.getAddressLine(0);
+            String[] streets = new String[]{addr.getSubThoroughfare(), addr.getThoroughfare()};
+            String street = TextUtils.join(" ", streets);
             String countryCode = addr.getCountryCode();
             String countryName = addr.getCountryName();
             String city = (addr.getLocality() != null) ? addr.getLocality() : addr.getSubLocality();
