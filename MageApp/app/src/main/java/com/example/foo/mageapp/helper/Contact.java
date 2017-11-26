@@ -243,23 +243,23 @@ public class Contact {
         List<Address> addrs = new ArrayList();
         Geocoder geo = new Geocoder(mContext, Locale.getDefault());
         if (geo.isPresent()) {
-            /*try {
+            try {
                 addrs = geo.getFromLocationName(addr, 1);
                 if (addrs.isEmpty()) {
                     new LocationTask().execute(addr);
                 } else {
                     this.parseAddressList(addrs);
+                    mAddrUpdateListener.onAddressUpdated(mData);
                 }
             } catch (IOException ioe) {
                 Log.e(TAG, ioe.getMessage(), ioe);
-            }*/
-            new LocationTask().execute(addr);
+            }
+//            new LocationTask().execute(addr);
         }
         return addrs;
     }
 
     protected void updateContactAddress() {
-        Map<String, String> data = new HashMap<>();
         String json = mGoogleGeocodeResult;
         try {
             JSONObject jo = (JSONObject) new JSONTokener(json).nextValue();
@@ -310,19 +310,24 @@ public class Contact {
 
     protected void parseAddressList(List<Address> addrs) {
         for (Address addr : addrs) {
-            String[] streets = new String[]{addr.getSubThoroughfare(), addr.getThoroughfare()};
-            String street = TextUtils.join(" ", streets);
+            String city = (addr.getLocality() != null) ? addr.getLocality() : addr.getSubLocality();
             String countryCode = addr.getCountryCode();
             String countryName = addr.getCountryName();
-            String city = (addr.getLocality() != null) ? addr.getLocality() : addr.getSubLocality();
             String postcode = addr.getPostalCode();
-            mData.put("street", street);
+            String region = addr.getAdminArea();
+            String[] streets = new String[]{addr.getSubThoroughfare(), addr.getThoroughfare()};
+            String street = TextUtils.join(" ", streets);
+            mData.put("city", city);
             mData.put("country_code", countryCode);
             mData.put("country", countryName);
             mData.put("country_id", countryCode);
-            mData.put("city", city);
             mData.put("postcode", postcode);
+            mData.put("region", region);
+            mData.put("region_id", region);
+            mData.put("street", street);
 
+            // don't do this, let user fill out the 2nd street field (Apt, Room or Floor #s)
+            /**
             // get street_2 from formatted_address field
             String formattedAddr = mData.get("formatted_address");
             // use REGEX to remove anything but alphanumeric
@@ -335,6 +340,7 @@ public class Contact {
             street2 = street2.replaceAll(pattern, "");
             street2 = street2.trim();
             mData.put("street_2", street2);
+            */
         }
     }
 
@@ -343,12 +349,15 @@ public class Contact {
         protected String doInBackground(String... params) {
             String addr = params[0];
             String url = String.format(GOOGLE_GEOCODE_REQUEST_URL, addr);
+            Log.d(TAG, "google geocoder request url: " + url);
             byte[] bytes = Helper.getUrlBytes(url);
+            if (bytes == null) return null;
             String result = new String(bytes);
             return result;
         }
         @Override
         protected void onPostExecute(String result) {
+            if (result == null) return;
             mGoogleGeocodeResult = result;
             updateContactAddress();
         }

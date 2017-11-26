@@ -8,6 +8,7 @@ import com.example.foo.mageapp.form.Form;
 import com.example.foo.mageapp.form.FormField;
 import com.example.foo.mageapp.form.FormFieldValidator;
 import com.example.foo.mageapp.form.FormFieldValue;
+import com.example.foo.mageapp.helper.RequestParamList;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by foo on 10/14/17.
@@ -476,7 +476,7 @@ public class CheckoutPaymentMethodConnect extends DefaultConnect {
         return val;
     }
 
-    public ResponseMessage savePayment(Map<String, String> data) {
+    public ResponseMessage savePayment(RequestParamList data) {
         mPath = "xmlconnect/checkout/savePayment";
         mPostData = data;
         Log.d(TAG, "post data: " + data);

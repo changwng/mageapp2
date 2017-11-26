@@ -19,12 +19,12 @@ import android.widget.RadioButton;
 import com.example.foo.mageapp.checkout.ShippingMethod;
 import com.example.foo.mageapp.checkout.ShippingMethodRate;
 import com.example.foo.mageapp.helper.Helper;
+import com.example.foo.mageapp.helper.RequestParam;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.xmlconnect.CheckoutShippingMethodConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +36,7 @@ public class CheckoutShippingMethodFragment extends Fragment {
     protected ArrayList<ShippingMethod> mShippingMethods = new ArrayList<>();
     protected LinearLayout mRadioGroup;
     protected Context mContext;
-    protected Map<String, String> mPostData = new HashMap<>();
+    protected RequestParamList mPostData = new RequestParamList();
     protected ResponseMessage mRespMsg;
     protected Button mBtNext;
 
@@ -103,7 +103,8 @@ public class CheckoutShippingMethodFragment extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 String rateCode = ((ShippingMethodRate) v.getTag()).getCode();
-                                mPostData.put("shipping_method", rateCode);
+                                RequestParam param = new RequestParam("shipping_method", rateCode);
+                                mPostData.add(param);
                                 updateNextButton();
                             }
                         });

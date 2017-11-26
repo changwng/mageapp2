@@ -52,8 +52,7 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/card_type"
-            style="?android:attr/spinnerDropDownItemStyle"/>
+            android:id="@+id/card_type"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -81,8 +80,7 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/card_exp_month"
-                    style="?android:attr/spinnerDropDownItemStyle"/>
+                    android:id="@+id/card_exp_month"/>
             </LinearLayout>
 
             <LinearLayout
@@ -98,8 +96,7 @@
                 <Spinner
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/card_exp_year"
-                    style="?android:attr/spinnerDropDownItemStyle"/>
+                    android:id="@+id/card_exp_year"/>
 
             </LinearLayout>
 
@@ -124,7 +121,7 @@
         android:id="@+id/bt_payment_method_continue"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/bt_continue"
+        android:text="@string/cont"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"/>
 

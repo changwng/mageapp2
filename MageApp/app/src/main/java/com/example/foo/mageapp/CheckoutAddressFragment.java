@@ -2,6 +2,7 @@ package com.example.foo.mageapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +35,8 @@ import com.example.foo.mageapp.form.FormField;
 import com.example.foo.mageapp.form.FormFieldValue;
 import com.example.foo.mageapp.helper.Contact;
 import com.example.foo.mageapp.helper.Helper;
+import com.example.foo.mageapp.helper.RequestParam;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
 import java.util.HashMap;
@@ -55,7 +58,7 @@ public class CheckoutAddressFragment extends Fragment {
     protected LinearLayout mAddressForm;
     protected Button mBtSave;
     protected Set<String> mFormValueRelations = new HashSet<>();
-    protected Map<String, String> mPostData;
+    protected RequestParamList mPostData;
     protected ResponseMessage mFormSaveRespMsg;
     protected boolean mIsFormValid;
     protected Map<String, String> mContactData;
@@ -113,7 +116,6 @@ public class CheckoutAddressFragment extends Fragment {
         if (resultCode != Activity.RESULT_OK) return;
         Uri uri = intent.getData();
         Contact contact = Contact.getInstance(this.getContext());
-        contact.requestDataByContactUri(uri);
         contact.setOnAddressUpdateListener(new Contact.OnAddressUpdateListener() {
             @Override
             public void onAddressUpdated(Map<String, String> data) {
@@ -121,6 +123,7 @@ public class CheckoutAddressFragment extends Fragment {
                 populateForm();
             }
         });
+        contact.requestDataByContactUri(uri);
     }
 
     protected void updateUI() {
@@ -238,7 +241,7 @@ public class CheckoutAddressFragment extends Fragment {
                         key = field.getName();
                         val = cbox.isChecked() ? "1" : "0";
                         this.validateField(field, val);
-                        mPostData.put(key, val);
+                        mPostData.add(new RequestParam(key, val));
                         break;
                     case FormField.TYPE_SELECT:
                         Spinner dropdown = (Spinner) view;
@@ -247,7 +250,7 @@ public class CheckoutAddressFragment extends Fragment {
                         if (item != null) {
                             val = item.getValue();
                             this.validateField(field, val);
-                            mPostData.put(key, val);
+                            mPostData.add(new RequestParam(key, val));
                         }
                         break;
                     case FormField.TYPE_TEXT:
@@ -255,7 +258,7 @@ public class CheckoutAddressFragment extends Fragment {
                         key = field.getName();
                         val = etxt.getText().toString();
                         this.validateField(field, val);
-                        mPostData.put(key, val);
+                        mPostData.add(new RequestParam(key, val));
                         break;
                 }
             }

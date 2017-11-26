@@ -17,9 +17,11 @@ import android.widget.Toast;
 
 import com.example.foo.mageapp.form.Form;
 import com.example.foo.mageapp.helper.Contact;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.xmlconnect.CheckoutBillingConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +34,7 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
 
     public CheckoutBillingFragment() {
         // Required empty public constructor
-        mPostData = new HashMap<>();
+        mPostData = new RequestParamList();
     }
 
     @Override
@@ -116,7 +118,6 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
 
     protected void fetchPrimaryContact() {
         Contact contact = Contact.getInstance(getContext());
-        contact.requestOwnerData();
         contact.setOnAddressUpdateListener(new Contact.OnAddressUpdateListener() {
             @Override
             public void onAddressUpdated(Map<String, String> data) {
@@ -124,6 +125,7 @@ public class CheckoutBillingFragment extends CheckoutAddressFragment {
                 populateForm();
             }
         });
+        contact.requestOwnerData();
     }
 
     private class BillingTask extends AsyncTask<Void, Void, Form> {

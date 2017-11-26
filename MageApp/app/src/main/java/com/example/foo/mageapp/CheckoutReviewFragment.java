@@ -26,12 +26,15 @@ import android.widget.TextView;
 import com.example.foo.mageapp.cart.CartTotal;
 import com.example.foo.mageapp.checkout.OrderReview;
 import com.example.foo.mageapp.helper.ImgDownloader;
+import com.example.foo.mageapp.helper.RequestParam;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.helper.SharedPref;
 import com.example.foo.mageapp.sales.QuoteItem;
 import com.example.foo.mageapp.sales.QuoteItemOption;
 import com.example.foo.mageapp.xmlconnect.CheckoutReviewConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +55,7 @@ public class CheckoutReviewFragment extends Fragment {
     protected Button mBtPlaceOrder;
     protected ResponseMessage mRespMsg;
     protected Bundle mPaymentData; // payment data from checkout payment
-    protected Map<String, String> mPostData = new HashMap<>();
+    protected RequestParamList mPostData = new RequestParamList();
 
     public CheckoutReviewFragment() {
         // Required empty public constructor
@@ -95,7 +98,8 @@ public class CheckoutReviewFragment extends Fragment {
             public void onClick(View v) {
                 for (String key : mPaymentData.keySet()) {
                     String val = mPaymentData.getString(key);
-                    mPostData.put(key, val);
+                    RequestParam param = new RequestParam(key, val);
+                    mPostData.add(param);
                 }
                 new PlaceOrderTask().execute();
             }

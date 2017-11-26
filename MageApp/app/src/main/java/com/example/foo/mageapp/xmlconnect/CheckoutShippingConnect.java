@@ -3,8 +3,7 @@ package com.example.foo.mageapp.xmlconnect;
 import android.content.Context;
 
 import com.example.foo.mageapp.form.Form;
-
-import java.util.Map;
+import com.example.foo.mageapp.helper.RequestParamList;
 
 /**
  * Created by foo on 10/7/17.
@@ -23,7 +22,7 @@ public class CheckoutShippingConnect extends CheckoutAddressConnect {
         return this.parseFormByXml(resp);
     }
 
-    public ResponseMessage saveShipping(Map<String, String> postData) {
+    public ResponseMessage saveShipping(RequestParamList postData) {
         mPath = "xmlconnect/checkout/saveShippingAddress";
         mPostData = postData;
         String url = this.getRequestUrl();

@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.example.foo.mageapp.checkout.ShippingMethod;
 import com.example.foo.mageapp.checkout.ShippingMethodRate;
+import com.example.foo.mageapp.helper.RequestParam;
+import com.example.foo.mageapp.helper.RequestParamList;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -107,7 +109,7 @@ public class CheckoutShippingMethodConnect extends DefaultConnect {
         return rates;
     }
 
-    public ResponseMessage saveShippingMethod(Map<String, String> data) {
+    public ResponseMessage saveShippingMethod(RequestParamList data) {
         mPath = "xmlconnect/checkout/saveShippingMethod";
         mPostData = data;
         String url = this.getRequestUrl();

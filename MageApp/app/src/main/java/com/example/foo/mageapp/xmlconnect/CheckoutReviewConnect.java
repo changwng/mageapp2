@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.foo.mageapp.cart.CartTotal;
 import com.example.foo.mageapp.checkout.OrderReview;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.sales.QuoteItem;
 import com.example.foo.mageapp.sales.QuoteItemOption;
 
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by foo on 10/19/17.
@@ -266,7 +266,7 @@ public class CheckoutReviewConnect extends DefaultConnect {
         return options;
     }
 
-    public ResponseMessage placeOrder(Map<String, String> data) {
+    public ResponseMessage placeOrder(RequestParamList data) {
         mPath = "xmlconnect/checkout/saveOrder";
         mPostData = data;
         String url = this.getRequestUrl();

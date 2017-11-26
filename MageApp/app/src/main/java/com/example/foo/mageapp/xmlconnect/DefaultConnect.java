@@ -9,6 +9,8 @@ import android.util.Log;
 import com.example.foo.mageapp.catalog.Category;
 import com.example.foo.mageapp.helper.Cookie;
 import com.example.foo.mageapp.helper.Helper;
+import com.example.foo.mageapp.helper.RequestParam;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.helper.SharedPref;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -25,7 +27,6 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class DefaultConnect {
     protected Context mContext;
     protected String mPath;
     protected Uri mUri;
-    protected Map<String, String> mPostData = new HashMap<>();
+    protected RequestParamList mPostData = new RequestParamList();
     protected Cookie mCookie;
     protected boolean mIsMessageXml = false;
     protected ResponseMessage mRespMsg;
@@ -173,19 +174,18 @@ public class DefaultConnect {
     protected void prepareRequestParams(HttpURLConnection conn) throws IOException {
         conn.setDoOutput(true);
         conn.setChunkedStreamingMode(0);
-        if (mPostData.size() < 1) return;
+        if (mPostData.isEmpty()) return;
         Uri.Builder builder = new Uri.Builder();
-        /*for (String key : mPostData.keySet()) {
-            String val = mPostData.get(key);
-            builder.appendQueryParameter(key, val);
-        }*/
-        for (Map.Entry<String, String> entry : mPostData.entrySet()) {
-            String key = entry.getKey();
-            String val = entry.getValue();
+
+        for (RequestParam param : mPostData) {
+            String key = param.getKey();
+            String val = param.getValue();
             builder.appendQueryParameter(key, val);
         }
+
         Uri uri = builder.build();
         String query = uri.getEncodedQuery();
+        Log.d(TAG, "request query: " + query);
         byte[] bytes = query.getBytes();
         OutputStream out = conn.getOutputStream();
         out.write(bytes);
@@ -201,6 +201,7 @@ public class DefaultConnect {
 
     protected String getCookieFromHeader(HttpURLConnection conn) {
         Map<String, List<String>> headers = conn.getHeaderFields();
+        if (headers == null) return null;
         for (String key : headers.keySet()) {
             if ((key != null) && key.toLowerCase().contains("cookie")) {
                 List<String> header = headers.get(key);
@@ -226,7 +227,8 @@ public class DefaultConnect {
 
     public void setPostData(String key, String value) {
         if (key.isEmpty() || value.isEmpty()) return;
-        mPostData.put(key, value);
+        RequestParam param = new RequestParam(key, value);
+        mPostData.add(param);
     }
 
     public List<Category> fetchCategoryItems() {

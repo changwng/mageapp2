@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.foo.mageapp.form.Form;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.xmlconnect.CheckoutShippingConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
@@ -23,7 +24,7 @@ public class CheckoutShippingFragment extends CheckoutAddressFragment {
 
     public CheckoutShippingFragment() {
         // Required empty public constructor
-        mPostData = new HashMap<>();
+        mPostData = new RequestParamList();
     }
 
     @Override

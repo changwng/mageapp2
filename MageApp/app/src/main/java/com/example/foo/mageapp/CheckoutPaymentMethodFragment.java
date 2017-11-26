@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +23,13 @@ import com.example.foo.mageapp.checkout.PaymentMethod;
 import com.example.foo.mageapp.form.DropDownAdapter;
 import com.example.foo.mageapp.form.FormField;
 import com.example.foo.mageapp.form.FormFieldValue;
+import com.example.foo.mageapp.helper.RequestParam;
+import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.xmlconnect.CheckoutPaymentMethodConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,8 +39,8 @@ public class CheckoutPaymentMethodFragment extends Fragment {
     protected static final String TAG = CheckoutPaymentMethodFragment.class.getSimpleName();
     protected static final String STATE_METHODS = "paymentMethods";
     protected Context mContext;
-    protected ArrayList<PaymentMethod> mMethods;
-    protected Map<String, String> mPostData = new HashMap<>();
+    protected List<PaymentMethod> mMethods;
+    protected RequestParamList mPostData = new RequestParamList();
 //    protected LinearLayout mFormContainer;
 //    protected TextView mTvPaymentMethodTitle;
     protected TextView mTvCardTypeTitle;
@@ -97,7 +97,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(STATE_METHODS, mMethods);
+        outState.putParcelableArrayList(STATE_METHODS, ((ArrayList) mMethods));
         super.onSaveInstanceState(outState);
     }
 
@@ -118,7 +118,8 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         for (PaymentMethod method : mMethods) {
             String postName = method.getPostName();
             String code = method.getCode();
-            mPostData.put(postName, code);
+            RequestParam param = new RequestParam(postName, code);
+            mPostData.add(param);
 //            mTvPaymentMethodTitle.setText(method.getLabel());
 //            mFormContainer.addView(tv);
             for (FormField field : method.getForm().getFields()) {
@@ -158,7 +159,8 @@ public class CheckoutPaymentMethodFragment extends Fragment {
                 FormFieldValue val = parentField.getValues().get(position);
                 String name = parentField.getName();
                 String value = val.getValue();
-                mPostData.put(name, value);
+                RequestParam param = new RequestParam(name, value);
+                mPostData.add(param);
             }
 
             @Override
@@ -173,7 +175,8 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         editTxt.setTag(field);
         editTxt.setId(viewId);
         final String name = field.getName();
-        mPostData.put(name, null);
+        RequestParam param = new RequestParam(name, null);
+        mPostData.add(param);
         editTxt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -187,7 +190,8 @@ public class CheckoutPaymentMethodFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mPostData.put(name, s.toString());
+                RequestParam param = new RequestParam(name, s.toString());
+                mPostData.add(param);
             }
         });
     }
@@ -196,7 +200,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         for (PaymentMethod method : mMethods) {
             for (FormField field : method.getForm().getFields()) {
                 String name = field.getName();
-                if (!mPostData.containsKey(name) || TextUtils.isEmpty(mPostData.get(name))) {
+                if (!mPostData.containsKey(name) || !mPostData.hasValue(name)) {
                     this.openAlertDialog(String.format("%s cannot be empty", field.getLabel()));
                     return false;
                 }
@@ -226,8 +230,9 @@ public class CheckoutPaymentMethodFragment extends Fragment {
             Intent activity = CheckoutReviewActivity.newIntent(mContext);
 
             Bundle paymentData = new Bundle();
-            for (String key : mPostData.keySet()) {
-                String val = mPostData.get(key);
+            for (RequestParam param : mPostData) {
+                String key = param.getKey();
+                String val = param.getValue();
                 paymentData.putString(key, val);
             }
             activity.putExtra(CheckoutReviewActivity.EXTRA_PAYMENT_DATA, paymentData);

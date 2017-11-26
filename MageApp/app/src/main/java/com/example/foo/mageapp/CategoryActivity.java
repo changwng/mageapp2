@@ -39,7 +39,7 @@ public class CategoryActivity extends DefaultActivity {
     protected ListAdapter mDrawerListAdapter;
     protected String mCategoryId;
     protected Category mCategory;
-    protected List<DrawerItem> mDrawerItems;
+    protected List<DrawerItem>  mDrawerItems = new ArrayList<>();
     protected CharSequence mTitle;
     protected CharSequence mDrawertitle;
 
@@ -130,27 +130,26 @@ public class CategoryActivity extends DefaultActivity {
 
     protected void updateDrawerAdapter() {
         List<Category> items = mCategory.getChildren();
+        this.addHomeMenuItem();
         if (!items.isEmpty()) {
-            setDrawerItems(items);
+            this.setDrawerItems(items);
         }
-        if (!mDrawerItems.isEmpty()) {
-            mDrawerListAdapter = new DrawerListAdapter(this, R.layout.drawer_list_item, mDrawerItems);
-            mDrawerList.setAdapter(mDrawerListAdapter);
-            mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    DrawerItem item = mDrawerItems.get(position);
-                    if (item.isHome()) {
-                        NavUtils.navigateUpFromSameTask(CategoryActivity.this);
-                        return;
-                    }
-                    new CategoryTask().execute(item.getId());
-                    mDrawerList.setItemChecked(position, true);
-                    mDrawerLayout.closeDrawer(mDrawerList);
-                    setTitle(item.getLabel());
+        mDrawerListAdapter = new DrawerListAdapter(this, R.layout.drawer_list_item, mDrawerItems);
+        mDrawerList.setAdapter(mDrawerListAdapter);
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                DrawerItem item = mDrawerItems.get(position);
+                if (item.isHome()) {
+                    NavUtils.navigateUpFromSameTask(CategoryActivity.this);
+                    return;
                 }
-            });
-        }
+                new CategoryTask().execute(item.getId());
+                mDrawerList.setItemChecked(position, true);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                setTitle(item.getLabel());
+            }
+        });
     }
 
     protected void updateFragment() {
@@ -160,14 +159,18 @@ public class CategoryActivity extends DefaultActivity {
                 .commit();
     }
 
+    protected void addHomeMenuItem() {
+        if (mDrawerItems.isEmpty()) {
+            DrawerItem item = new DrawerItem();
+            String lblHome = getResources().getString(R.string.home);
+            item.setLabel(lblHome);
+            mDrawerItems.add(item);
+        }
+    }
+
     protected void setDrawerItems(List<Category> items) {
-        DrawerItem item = new DrawerItem();
-        String lblHome = getResources().getString(R.string.home);
-        item.setLabel(lblHome);
-        mDrawerItems = new ArrayList<>();
-        mDrawerItems.add(item);
         for (Category cat : items) {
-            item = new DrawerItem();
+            DrawerItem item = new DrawerItem();
             item.setId(cat.getId());
             item.setLabel(cat.getLabel());
             mDrawerItems.add(item);

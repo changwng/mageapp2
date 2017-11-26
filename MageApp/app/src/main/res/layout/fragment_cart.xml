@@ -91,7 +91,7 @@
             android:id="@+id/btn_cart_start_shopping"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/bt_continue_shopping"
+            android:text="@string/cont"
             android:visibility="gone" />
 
     </FrameLayout>
