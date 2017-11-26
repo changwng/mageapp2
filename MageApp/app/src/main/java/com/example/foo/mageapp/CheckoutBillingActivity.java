@@ -21,6 +21,6 @@ public class CheckoutBillingActivity extends AppCompatActivity {
                     .commit();
         }
 
-        this.getSupportActionBar().setTitle(R.string.billing_address);
+        this.getSupportActionBar().setTitle(R.string.billing_info);
     }
 }

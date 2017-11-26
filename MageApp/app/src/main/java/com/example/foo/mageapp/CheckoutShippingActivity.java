@@ -21,6 +21,6 @@ public class CheckoutShippingActivity extends AppCompatActivity {
                     .commit();
         }
 
-        this.getSupportActionBar().setTitle(R.string.shipping_address);
+        this.getSupportActionBar().setTitle(R.string.shipping_info);
     }
 }

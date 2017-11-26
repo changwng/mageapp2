@@ -98,8 +98,7 @@ public class CheckoutReviewFragment extends Fragment {
             public void onClick(View v) {
                 for (String key : mPaymentData.keySet()) {
                     String val = mPaymentData.getString(key);
-                    RequestParam param = new RequestParam(key, val);
-                    mPostData.add(param);
+                    mPostData.get(key).add(val);
                 }
                 new PlaceOrderTask().execute();
             }

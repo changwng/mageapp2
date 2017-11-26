@@ -23,7 +23,6 @@ import com.example.foo.mageapp.checkout.PaymentMethod;
 import com.example.foo.mageapp.form.DropDownAdapter;
 import com.example.foo.mageapp.form.FormField;
 import com.example.foo.mageapp.form.FormFieldValue;
-import com.example.foo.mageapp.helper.RequestParam;
 import com.example.foo.mageapp.helper.RequestParamList;
 import com.example.foo.mageapp.xmlconnect.CheckoutPaymentMethodConnect;
 import com.example.foo.mageapp.xmlconnect.ResponseMessage;
@@ -118,8 +117,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         for (PaymentMethod method : mMethods) {
             String postName = method.getPostName();
             String code = method.getCode();
-            RequestParam param = new RequestParam(postName, code);
-            mPostData.add(param);
+            mPostData.get(postName).add(code);
 //            mTvPaymentMethodTitle.setText(method.getLabel());
 //            mFormContainer.addView(tv);
             for (FormField field : method.getForm().getFields()) {
@@ -159,8 +157,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
                 FormFieldValue val = parentField.getValues().get(position);
                 String name = parentField.getName();
                 String value = val.getValue();
-                RequestParam param = new RequestParam(name, value);
-                mPostData.add(param);
+                mPostData.get(name).add(value);
             }
 
             @Override
@@ -175,8 +172,6 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         editTxt.setTag(field);
         editTxt.setId(viewId);
         final String name = field.getName();
-        RequestParam param = new RequestParam(name, null);
-        mPostData.add(param);
         editTxt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -190,8 +185,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                RequestParam param = new RequestParam(name, s.toString());
-                mPostData.add(param);
+                mPostData.get(name).add(s.toString());
             }
         });
     }
@@ -200,7 +194,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         for (PaymentMethod method : mMethods) {
             for (FormField field : method.getForm().getFields()) {
                 String name = field.getName();
-                if (!mPostData.containsKey(name) || !mPostData.hasValue(name)) {
+                if (!mPostData.containsKey(name) || mPostData.get(name).isEmpty()) {
                     this.openAlertDialog(String.format("%s cannot be empty", field.getLabel()));
                     return false;
                 }
@@ -224,16 +218,16 @@ public class CheckoutPaymentMethodFragment extends Fragment {
                 .show();
     }
 
-    protected void savePaymentAfter() {
+    protected void onPostPaymentSave() {
         this.openAlertDialog(mRespMsg.getText());
         if (mRespMsg.isSuccess()) {
             Intent activity = CheckoutReviewActivity.newIntent(mContext);
-
             Bundle paymentData = new Bundle();
-            for (RequestParam param : mPostData) {
-                String key = param.getKey();
-                String val = param.getValue();
-                paymentData.putString(key, val);
+            for (String key : mPostData.keySet()) {
+                List<String> items = mPostData.get(key);
+                for (String val : items) {
+                    paymentData.putString(key, val);
+                }
             }
             activity.putExtra(CheckoutReviewActivity.EXTRA_PAYMENT_DATA, paymentData);
             this.startActivity(activity);
@@ -263,7 +257,7 @@ public class CheckoutPaymentMethodFragment extends Fragment {
         @Override
         protected void onPostExecute(ResponseMessage result) {
             mRespMsg = result;
-            savePaymentAfter();
+            onPostPaymentSave();
         }
     }
 }

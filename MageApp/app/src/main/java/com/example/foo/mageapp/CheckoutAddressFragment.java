@@ -58,7 +58,7 @@ public class CheckoutAddressFragment extends Fragment {
     protected LinearLayout mAddressForm;
     protected Button mBtSave;
     protected Set<String> mFormValueRelations = new HashSet<>();
-    protected RequestParamList mPostData;
+    protected RequestParamList mPostData = new RequestParamList();
     protected ResponseMessage mFormSaveRespMsg;
     protected boolean mIsFormValid;
     protected Map<String, String> mContactData;
@@ -241,7 +241,7 @@ public class CheckoutAddressFragment extends Fragment {
                         key = field.getName();
                         val = cbox.isChecked() ? "1" : "0";
                         this.validateField(field, val);
-                        mPostData.add(new RequestParam(key, val));
+                        mPostData.get(key).add(val);
                         break;
                     case FormField.TYPE_SELECT:
                         Spinner dropdown = (Spinner) view;
@@ -250,7 +250,7 @@ public class CheckoutAddressFragment extends Fragment {
                         if (item != null) {
                             val = item.getValue();
                             this.validateField(field, val);
-                            mPostData.add(new RequestParam(key, val));
+                            mPostData.get(key).add(val);
                         }
                         break;
                     case FormField.TYPE_TEXT:
@@ -258,7 +258,7 @@ public class CheckoutAddressFragment extends Fragment {
                         key = field.getName();
                         val = etxt.getText().toString();
                         this.validateField(field, val);
-                        mPostData.add(new RequestParam(key, val));
+                        mPostData.get(key).add(val);
                         break;
                 }
             }

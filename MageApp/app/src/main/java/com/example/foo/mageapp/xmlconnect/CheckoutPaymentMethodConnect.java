@@ -478,7 +478,7 @@ public class CheckoutPaymentMethodConnect extends DefaultConnect {
 
     public ResponseMessage savePayment(RequestParamList data) {
         mPath = "xmlconnect/checkout/savePayment";
-        mPostData = data;
+        mParams = data;
         Log.d(TAG, "post data: " + data);
         String url = this.getRequestUrl();
         String resp = this.getContentByUrl(url);

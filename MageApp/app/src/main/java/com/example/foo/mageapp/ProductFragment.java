@@ -160,7 +160,9 @@ public class ProductFragment extends DefaultFragment implements AdapterView.OnIt
 
     public void updateUI() {
         if (mProduct == null) return;
-        mTvProductName.setText(mProduct.getName());
+        String productName = mProduct.getName();
+        ((ProductActivity) this.getActivity()).getSupportActionBar().setTitle(productName);
+        mTvProductName.setText(productName);
         mImgDownloader.queueImg(mIvProductIcon, mProduct.getIcon());
         mTvProductPrice.setText(mProduct.getPrice());
         mTvProductDescr.setText(mProduct.getDescription());

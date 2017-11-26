@@ -27,7 +27,7 @@ public class CheckoutBillingConnect extends CheckoutAddressConnect {
 
     public ResponseMessage saveBilling(RequestParamList postData) {
         mPath = "xmlconnect/checkout/saveBillingAddress";
-        mPostData = postData;
+        mParams = postData;
         String url = this.getRequestUrl();
         String resp = getContentByUrl(url);
         return this.parseResponseMessage(resp);

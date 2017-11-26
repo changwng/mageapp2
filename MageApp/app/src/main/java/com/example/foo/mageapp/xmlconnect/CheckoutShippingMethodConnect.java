@@ -111,7 +111,7 @@ public class CheckoutShippingMethodConnect extends DefaultConnect {
 
     public ResponseMessage saveShippingMethod(RequestParamList data) {
         mPath = "xmlconnect/checkout/saveShippingMethod";
-        mPostData = data;
+        mParams = data;
         String url = this.getRequestUrl();
         String resp = this.getContentByUrl(url);
 //        String resp = this.getSaveMethodResponse();

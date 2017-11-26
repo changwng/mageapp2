@@ -103,8 +103,7 @@ public class CheckoutShippingMethodFragment extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 String rateCode = ((ShippingMethodRate) v.getTag()).getCode();
-                                RequestParam param = new RequestParam("shipping_method", rateCode);
-                                mPostData.add(param);
+                                mPostData.get("shipping_method").add(rateCode);
                                 updateNextButton();
                             }
                         });

@@ -25,6 +25,7 @@ public class CartActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, f)
                     .commit();
         }
+        this.getSupportActionBar().setTitle(R.string.shopping_cart);
     }
 
     public static Intent newIntent(Context context) {

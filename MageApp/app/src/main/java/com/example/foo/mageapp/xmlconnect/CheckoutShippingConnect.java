@@ -24,7 +24,7 @@ public class CheckoutShippingConnect extends CheckoutAddressConnect {
 
     public ResponseMessage saveShipping(RequestParamList postData) {
         mPath = "xmlconnect/checkout/saveShippingAddress";
-        mPostData = postData;
+        mParams = postData;
         String url = this.getRequestUrl();
         String resp = getContentByUrl(url);
         return this.parseResponseMessage(resp);

@@ -29,6 +29,7 @@ public class CheckoutReviewActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, f)
                     .commit();
         }
+        this.getSupportActionBar().setTitle(R.string.order_review);
     }
 
     public static Intent newIntent(Context context) {

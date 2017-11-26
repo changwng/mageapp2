@@ -20,5 +20,7 @@ public class CheckoutShippingMethodActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, f)
                     .commit();
         }
+
+        this.getSupportActionBar().setTitle(R.string.shipping_method);
     }
 }

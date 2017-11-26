@@ -268,7 +268,7 @@ public class CheckoutReviewConnect extends DefaultConnect {
 
     public ResponseMessage placeOrder(RequestParamList data) {
         mPath = "xmlconnect/checkout/saveOrder";
-        mPostData = data;
+        mParams = data;
         String url = this.getRequestUrl();
         String resp = this.getContentByUrl(url);
 //        String resp = this.getPlaceOrderResponse();

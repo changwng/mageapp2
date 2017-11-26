@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by foo on 3/11/17.
@@ -49,7 +50,7 @@ public class DefaultConnect {
     protected Context mContext;
     protected String mPath;
     protected Uri mUri;
-    protected RequestParamList mPostData = new RequestParamList();
+    protected RequestParamList mParams = new RequestParamList();
     protected Cookie mCookie;
     protected boolean mIsMessageXml = false;
     protected ResponseMessage mRespMsg;
@@ -174,13 +175,14 @@ public class DefaultConnect {
     protected void prepareRequestParams(HttpURLConnection conn) throws IOException {
         conn.setDoOutput(true);
         conn.setChunkedStreamingMode(0);
-        if (mPostData.isEmpty()) return;
+        if (mParams.isEmpty()) return;
         Uri.Builder builder = new Uri.Builder();
 
-        for (RequestParam param : mPostData) {
-            String key = param.getKey();
-            String val = param.getValue();
-            builder.appendQueryParameter(key, val);
+        for (String key : mParams.keySet()) {
+            List<String> list = mParams.get(key);
+            for (String val : list) {
+                builder.appendQueryParameter(key, val);
+            }
         }
 
         Uri uri = builder.build();
@@ -228,7 +230,7 @@ public class DefaultConnect {
     public void setPostData(String key, String value) {
         if (key.isEmpty() || value.isEmpty()) return;
         RequestParam param = new RequestParam(key, value);
-        mPostData.add(param);
+        mParams.get(key).add(value);
     }
 
     public List<Category> fetchCategoryItems() {
