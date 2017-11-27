@@ -76,6 +76,8 @@ public class DefaultConnect {
         byte[] bytes = getUrlBytes(url);
         if (bytes == null) {
             Log.d(TAG, "Failed to receive response!");
+            Cookie.getInstance(mContext).removeHeaderCookie();
+            bytes = getUrlBytes(url);
         }
         String resp = new String(bytes);
         Log.d(TAG, "response: " + resp);
