@@ -28,13 +28,16 @@
         android:padding="8dp">
 
         <ImageView
+            android:id="@+id/iv_quote_item_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/iv_quote_item_icon"
+            android:background="@drawable/thumbnail"
+            android:src="@drawable/thumbnail"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/tv_quote_item_qty"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/thumbnail" />
 
         <TextView
             android:layout_width="wrap_content"

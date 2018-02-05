@@ -16,13 +16,14 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/cart_empty"
         android:scaleType="centerCrop"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/cart_total_container"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cart_total_container"
-        app:srcCompat="@drawable/cart_empty"
-        android:visibility="gone"/>
+        app:srcCompat="@drawable/cart_empty" />
 
     <ScrollView
         android:layout_width="0dp"

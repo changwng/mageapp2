@@ -138,7 +138,7 @@ public class MainFragment extends DefaultFragment {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            View itemView = inflater.inflate(R.layout.category_list_item, null);
+            View itemView = inflater.inflate(R.layout.category_list_item, parent, false);
             return new ViewHolder(itemView);
         }
 
